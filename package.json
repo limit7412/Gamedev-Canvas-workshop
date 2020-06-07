@@ -1,0 +1,19 @@
+{
+  "name": "Gamedev-Canvas-workshop",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:limit7412/Gamedev-Canvas-workshop.git",
+  "author": "qazx7412 <git@newgenerations.im>",
+  "description": "",
+  "scripts": {
+    "tsc": "tsc",
+    "build": "webpack"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "ts-loader": "^4.4.1",
+    "typescript": "^2.9.2",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8"
+  }
+}
