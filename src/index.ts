@@ -51,8 +51,9 @@ const draw = () => {
       dy = -dy
     }
     else {
-      alert("GAME OVER");
-      document.location.reload();
+      alert("GAME OVER")
+      document.location.reload()
+      clearInterval(interval)
     }
   }
   x += dx
