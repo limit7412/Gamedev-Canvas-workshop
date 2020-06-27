@@ -172,9 +172,9 @@ const keyUpHandler = (e: KeyboardEvent) => {
 }
 
 const mouseMoveHandler = (e: MouseEvent) => {
-  var relativeX = e.clientX - canvas.offsetLeft;
+  var relativeX = e.clientX - canvas.offsetLeft
   if (relativeX > 0 && relativeX < canvas.width) {
-    paddleX = relativeX - paddleWidth / 2;
+    paddleX = relativeX - paddleWidth / 2
   }
 }
 
