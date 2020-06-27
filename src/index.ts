@@ -1,149 +1,227 @@
-const canvas = <HTMLCanvasElement>document.getElementById("myCanvas")
-let ctx = <CanvasRenderingContext2D>canvas.getContext("2d")
+const constant = {
+  ball: {
+    radius: 10,
+  },
+  paddle: {
+    height: 10,
+    width: 75,
+  },
+  brick: {
+    count: {
+      row: 3,
+      column: 5,
+    },
+    width: 75,
+    height: 20,
+    padding: 10,
+    offset: {
+      top: 30,
+      left: 30,
+    },
+  },
+}
 
-let x = canvas.width / 2
-let y = canvas.height - 30
+class Status {
+  public canvas = <HTMLCanvasElement>document.getElementById("myCanvas")
+  public ctx = <CanvasRenderingContext2D>this.canvas.getContext("2d")
 
-let dx = 2
-let dy = -2
-const ballRadius = 10
+  public x = this.canvas.width / 2
+  public y = this.canvas.height - 30
 
-const paddleHeight = 10
-const paddleWidth = 75
-let paddleX = (canvas.width - paddleWidth) / 2
+  public dx = 2
+  public dy = -2
 
-let rightPressed = false
-let leftPressed = false
+  public paddleX = (this.canvas.width - constant.paddle.width) / 2
 
-const brickRowCount = 3
-const brickColumnCount = 5
-const brickWidth = 75
-const brickHeight = 20
-const brickPadding = 10
-const brickOffsetTop = 30
-const brickOffsetLeft = 30
+  public rightPressed = false
+  public leftPressed = false
+
+  public score = 0
+  public lives = 3
+
+  constructor() { }
+}
 
 let bricks: Array<Array<{ x: number, y: number, status: boolean }>> = new Array()
-for (var c = 0; c < brickColumnCount; c++) {
+for (var c = 0; c < constant.brick.count.column; c++) {
   bricks[c] = []
-  for (var r = 0; r < brickRowCount; r++) {
+  for (var r = 0; r < constant.brick.count.row; r++) {
     bricks[c][r] = { x: 0, y: 0, status: true }
   }
 }
 
-const drawBall = () => {
-  ctx.beginPath()
+const drawBall = (status: Status) => {
+  status.ctx.beginPath()
 
-  ctx.arc(x, y, ballRadius, 0, Math.PI * 2)
-  ctx.fillStyle = "#0095DD"
-  ctx.fill()
+  status.ctx.arc(status.x, status.y, constant.ball.radius, 0, Math.PI * 2)
+  status.ctx.fillStyle = "#0095DD"
+  status.ctx.fill()
 
-  ctx.closePath()
+  status.ctx.closePath()
 }
 
-const drawPaddle = () => {
-  ctx.beginPath()
+const drawPaddle = (status: Status) => {
+  status.ctx.beginPath()
 
-  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight)
-  ctx.fillStyle = "#0095DD"
-  ctx.fill()
+  status.ctx.rect(
+    status.paddleX,
+    status.canvas.height - constant.paddle.height,
+    constant.paddle.width, constant.paddle.height
+  )
+  status.ctx.fillStyle = "#0095DD"
+  status.ctx.fill()
 
-  ctx.closePath()
+  status.ctx.closePath()
 }
 
-const drawBricks = () => {
-  for (var c = 0; c < brickColumnCount; c++) {
-    for (var r = 0; r < brickRowCount; r++) {
+const drawBricks = (status: Status) => {
+  for (var c = 0; c < constant.brick.count.column; c++) {
+    for (var r = 0; r < constant.brick.count.row; r++) {
       if (bricks[c][r].status) {
-        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft
-        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop
+        const brickX = (c * (constant.brick.width + constant.brick.padding)) + constant.brick.offset.left
+        const brickY = (r * (constant.brick.height + constant.brick.padding)) + constant.brick.offset.top
 
         bricks[c][r].x = brickX
         bricks[c][r].y = brickY
 
-        ctx.beginPath()
+        status.ctx.beginPath()
 
-        ctx.rect(brickX, brickY, brickWidth, brickHeight)
-        ctx.fillStyle = "#0095DD"
-        ctx.fill()
+        status.ctx.rect(brickX, brickY, constant.brick.width, constant.brick.height)
+        status.ctx.fillStyle = "#0095DD"
+        status.ctx.fill()
 
-        ctx.closePath()
+        status.ctx.closePath()
       }
     }
   }
 }
 
-const collisionDetection = () => {
-  for (var c = 0; c < brickColumnCount; c++) {
-    for (var r = 0; r < brickRowCount; r++) {
+const collisionDetection = (status: Status) => {
+  for (var c = 0; c < constant.brick.count.column; c++) {
+    for (var r = 0; r < constant.brick.count.row; r++) {
       var b = bricks[c][r]
       if (b.status) {
-        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
-          dy = -dy
+        if (
+          status.x > b.x &&
+          status.x < b.x + constant.brick.width &&
+          status.y > b.y
+          && status.y < b.y + constant.brick.height
+        ) {
+          status.dy = -status.dy
           b.status = false
+          status.score++
+          if (status.score == constant.brick.count.row * constant.brick.count.column) {
+            alert("YOU WIN, CONGRATULATIONS!")
+            document.location.reload()
+          }
         }
       }
     }
   }
 }
 
-const draw = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+const drawScore = (status: Status) => {
+  status.ctx.font = "16px Arial"
+  status.ctx.fillStyle = "#0095DD"
+  status.ctx.fillText("Score: " + status.score, 8, 20)
+}
 
-  drawBall()
-  drawPaddle()
-  collisionDetection()
-  drawBricks()
+const drawLives = (status: Status) => {
+  status.ctx.font = "16px Arial"
+  status.ctx.fillStyle = "#0095DD"
+  status.ctx.fillText("Lives: " + status.lives, status.canvas.width - 65, 20)
+}
 
-  if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-    dx = -dx
+const draw = (status: Status) => {
+  status.ctx.clearRect(0, 0, status.canvas.width, status.canvas.height)
+
+  drawBall(status)
+  drawPaddle(status)
+  collisionDetection(status)
+  drawBricks(status)
+  drawScore(status)
+
+  if (
+    status.x + status.dx > status.canvas.width - constant.ball.radius ||
+    status.x + status.dx < constant.ball.radius
+  ) {
+    status.dx = -status.dx
   }
-  if (y + dy < ballRadius) {
-    dy = -dy
-  } else if (y + dy > canvas.height - ballRadius) {
-    if (x > paddleX && x < paddleX + paddleWidth) {
-      dy = -dy
+  if (status.y + status.dy < constant.ball.radius) {
+    status.dy = -status.dy
+  } else if (status.y + status.dy > status.canvas.height - constant.ball.radius) {
+    if (status.x > status.paddleX && status.x < status.paddleX + constant.paddle.width) {
+      status.dy = -status.dy
     }
     else {
-      alert("GAME OVER")
-      document.location.reload()
-      clearInterval(interval)
+      status.lives--
+      if (!status.lives) {
+        alert("GAME OVER")
+        document.location.reload()
+      }
+      else {
+        status.x = status.canvas.width / 2
+        status.y = status.canvas.height - 30
+        status.dx = 2
+        status.dy = -2
+        status.paddleX = (status.canvas.width - constant.paddle.width) / 2
+      }
     }
   }
-  x += dx
-  y += dy
+  status.x += status.dx
+  status.y += status.dy
 
-  if (rightPressed && paddleX < canvas.width - paddleWidth) {
-    paddleX += 7;
+  if (status.rightPressed && status.paddleX < status.canvas.width - constant.paddle.width) {
+    status.paddleX += 7;
   }
-  else if (leftPressed && paddleX > 0) {
-    paddleX -= 7;
+  else if (status.leftPressed && status.paddleX > 0) {
+    status.paddleX -= 7;
   }
+
+  requestAnimationFrame(() => {
+    draw(status)
+  })
 }
 
-const keyDownHandler = (e: KeyboardEvent) => {
+const keyDownHandler = (e: KeyboardEvent, status: Status) => {
   if (e.key == "Right" || e.key == "ArrowRight") {
-    rightPressed = true
+    status.rightPressed = true
   }
   else if (e.key == "Left" || e.key == "ArrowLeft") {
-    leftPressed = true
+    status.leftPressed = true
   }
 }
 
-const keyUpHandler = (e: KeyboardEvent) => {
+const keyUpHandler = (e: KeyboardEvent, status: Status) => {
   if (e.key == "Right" || e.key == "ArrowRight") {
-    rightPressed = false
+    status.rightPressed = false
   }
   else if (e.key == "Left" || e.key == "ArrowLeft") {
-    leftPressed = false
+    status.leftPressed = false
   }
 }
 
-// const main = () => {
-document.addEventListener("keydown", keyDownHandler, false)
-document.addEventListener("keyup", keyUpHandler, false)
+const mouseMoveHandler = (e: MouseEvent, status: Status) => {
+  const relativeX = e.clientX - status.canvas.offsetLeft
+  if (relativeX > 0 && relativeX < status.canvas.width) {
+    status.paddleX = relativeX - constant.paddle.width / 2
+  }
+}
 
-let interval = setInterval(draw, 10)
-// }
+const main = () => {
+  const status = new Status()
 
-// main()
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    keyDownHandler(e, status)
+  }, false)
+  document.addEventListener("keyup", (e: KeyboardEvent) => {
+    keyUpHandler(e, status)
+  }, false)
+  document.addEventListener("mousemove", (e: MouseEvent) => {
+    mouseMoveHandler(e, status)
+  }, false)
+
+  draw(status)
+}
+
+main()
