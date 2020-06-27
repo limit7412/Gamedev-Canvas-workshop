@@ -24,6 +24,7 @@ const brickOffsetTop = 30
 const brickOffsetLeft = 30
 
 let score = 0
+let lives = 3
 
 let bricks: Array<Array<{ x: number, y: number, status: boolean }>> = new Array()
 for (var c = 0; c < brickColumnCount; c++) {
@@ -101,6 +102,12 @@ const drawScore = () => {
   ctx.fillText("Score: " + score, 8, 20)
 }
 
+const drawLives = () => {
+  ctx.font = "16px Arial"
+  ctx.fillStyle = "#0095DD"
+  ctx.fillText("Lives: " + lives, canvas.width - 65, 20)
+}
+
 const draw = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -120,9 +127,19 @@ const draw = () => {
       dy = -dy
     }
     else {
-      alert("GAME OVER")
-      document.location.reload()
-      clearInterval(interval)
+      lives--
+      if (!lives) {
+        alert("GAME OVER")
+        document.location.reload()
+        clearInterval(interval)
+      }
+      else {
+        x = canvas.width / 2
+        y = canvas.height - 30
+        dx = 2
+        dy = -2
+        paddleX = (canvas.width - paddleWidth) / 2
+      }
     }
   }
   x += dx
