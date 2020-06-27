@@ -154,9 +154,17 @@ const keyUpHandler = (e: KeyboardEvent) => {
   }
 }
 
+const mouseMoveHandler = (e: MouseEvent) => {
+  var relativeX = e.clientX - canvas.offsetLeft;
+  if (relativeX > 0 && relativeX < canvas.width) {
+    paddleX = relativeX - paddleWidth / 2;
+  }
+}
+
 // const main = () => {
 document.addEventListener("keydown", keyDownHandler, false)
 document.addEventListener("keyup", keyUpHandler, false)
+document.addEventListener("mousemove", mouseMoveHandler, false)
 
 let interval = setInterval(draw, 10)
 // }
