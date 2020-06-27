@@ -23,6 +23,8 @@ const brickPadding = 10
 const brickOffsetTop = 30
 const brickOffsetLeft = 30
 
+let score = 0
+
 let bricks: Array<Array<{ x: number, y: number, status: boolean }>> = new Array()
 for (var c = 0; c < brickColumnCount; c++) {
   bricks[c] = []
@@ -81,10 +83,22 @@ const collisionDetection = () => {
         if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
           dy = -dy
           b.status = false
+          score++
+          if (score == brickRowCount * brickColumnCount) {
+            alert("YOU WIN, CONGRATULATIONS!")
+            document.location.reload()
+            clearInterval(interval)
+          }
         }
       }
     }
   }
+}
+
+const drawScore = () => {
+  ctx.font = "16px Arial"
+  ctx.fillStyle = "#0095DD"
+  ctx.fillText("Score: " + score, 8, 20)
 }
 
 const draw = () => {
@@ -94,6 +108,7 @@ const draw = () => {
   drawPaddle()
   collisionDetection()
   drawBricks()
+  drawScore()
 
   if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
     dx = -dx
