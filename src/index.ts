@@ -88,7 +88,6 @@ const collisionDetection = () => {
           if (score == brickRowCount * brickColumnCount) {
             alert("YOU WIN, CONGRATULATIONS!")
             document.location.reload()
-            clearInterval(interval)
           }
         }
       }
@@ -131,7 +130,6 @@ const draw = () => {
       if (!lives) {
         alert("GAME OVER")
         document.location.reload()
-        clearInterval(interval)
       }
       else {
         x = canvas.width / 2
@@ -151,6 +149,8 @@ const draw = () => {
   else if (leftPressed && paddleX > 0) {
     paddleX -= 7;
   }
+
+  requestAnimationFrame(draw)
 }
 
 const keyDownHandler = (e: KeyboardEvent) => {
@@ -178,12 +178,12 @@ const mouseMoveHandler = (e: MouseEvent) => {
   }
 }
 
-// const main = () => {
-document.addEventListener("keydown", keyDownHandler, false)
-document.addEventListener("keyup", keyUpHandler, false)
-document.addEventListener("mousemove", mouseMoveHandler, false)
+const main = () => {
+  document.addEventListener("keydown", keyDownHandler, false)
+  document.addEventListener("keyup", keyUpHandler, false)
+  document.addEventListener("mousemove", mouseMoveHandler, false)
 
-let interval = setInterval(draw, 10)
-// }
+  draw()
+}
 
-// main()
+main()
